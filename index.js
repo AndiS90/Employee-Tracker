@@ -1,6 +1,25 @@
 //Include packages needed for this application
+const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+const department = require('./lib/department');
+const role = require('./lib/role');
+const employee = require('./lib/employee')
+
+
+// Connect to database
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      // MySQL username,
+      user: 'root',
+      // MySQL password
+      password: '',
+      database: 'courses_db'
+    },
+    console.log(`Connected to the company_db database.`)
+  );
+
 
 const menu = [{
     type: "list",
@@ -27,7 +46,7 @@ const addRoleQ = [{
 {
     type: 'input',
     name: 'roleSalary',
-    message: 'What is the salary for this role (INT ONLY PLZ)?',
+    message: 'What is the salary for this role?',
 },
 {
     type: 'input',
