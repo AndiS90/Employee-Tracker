@@ -7,15 +7,19 @@ const role = require('./lib/role');
 const employee = require('./lib/employee')
 
 
+allEmployees = [];
+allRoles = [];
+allDepts = [];
+
 // Connect to database
 const db = mysql.createConnection(
     {
       host: 'localhost',
       // MySQL username,
-      user: 'root',
+      user:  process.env.DB_USER,
       // MySQL password
-      password: '',
-      database: 'courses_db'
+      password: process.env.DB_PASSWORD,
+      database:  process.env.DB_NAME
     },
     console.log(`Connected to the company_db database.`)
   );
@@ -82,3 +86,129 @@ const addEmployeeQ = [{
     name: 'employeeManager',
     message: "Who is this employee's manager?"
 }];
+
+
+
+
+async function promptMenu()  {
+    await inquirer.prompt(menu)
+        .then((data) => { 
+            menuAnswer = data.menu;
+             menuIf(menuAnswer);
+            }
+            );
+
+
+
+
+
+async function menuIf(answer){
+
+            if (answer === "VIEW ALL DEPTS") {
+
+                   await department.viewWhole();
+                    
+                    
+
+                promptMenu();
+
+            } else if (answer === "VIEW ALL ROLES") {
+
+                await 
+                    
+
+                promptMenu();
+
+
+
+            }else if (answer === "VIEW ALL EMPLOYEES") {
+
+
+
+                 promptMenu();
+
+            }else if(answer === "ADD A ROLE") {
+
+                inquirer.prompt(addRoleQ)
+                    .then((data) => {
+
+
+
+
+                    });
+             
+
+                promptMenu();
+
+            }else if (answer === "ADD AN EMPLOYEE"){
+
+                inquirer.prompt(addEmployeeQ)
+                .then((data) => {
+
+
+
+
+                });
+
+
+                promptMenu();
+
+            }else if (answer ===  "UPDATE EMPLOYEE ROLE"){
+
+                inquirer.prompt(addDeptQ)
+                    .then((data) => {
+
+
+
+
+                    });
+
+
+                promptMenu();
+
+            } else if (answer === "Finish!") {
+
+                   await 
+                  
+
+               
+
+                //return;
+
+            }
+        };
+
+async function promptMenu()  {
+    await inquirer.prompt(menu)
+        .then((data) => { menuAnswer = data.menu;
+             menuIf(menuAnswer);})
+
+async function menuIf(answer){
+
+            if (answer === "Engineer") {
+
+                   await addEng()   
+                    
+                    
+
+                promptMenu();
+
+            } else if (answer === "Intern") {
+
+                await addInt()
+                    
+
+                promptMenu();
+
+            } else if (answer === "Finish!") {
+
+                   await addteam()
+                  
+
+               
+
+                //return;
+
+            }
+        }
+};
