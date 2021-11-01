@@ -1,17 +1,17 @@
-INSERT INTO department (id, name)
-    VALUES (11, Math)
-           (12, Comp Sci)
-            (13, Business)
+INSERT INTO department (department_name)
+    VALUES ("Math"),
+        ("Comp_Sci"),
+         ("Business");
 
-INSERT INTO role (id, title, salary, department_id)
-    VALUES (111, Instructor, 52000, 11)
-           (112, Maintenance, 22000, 13)
-           (113, Analyst, 35000, 12)
-           (114, Manager, 40000, 13)
+INSERT INTO job (title, salary, department_id)
+    VALUES ("Manager", 52000, 1),
+           ("Maintenance", 22000, 3),
+           ("Analyst", 35000, 2),
+           ("Instructor", 40000, 3);
 
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-    VALUES (1111, Bob, Smith, 111,1113)
-            (1112, Mat, Cauthon, 113, 1113)
-            (1113, Moiraine, Damodred, 114, NULL)
-            (1114, Padan, Fain, 112, 1115)
-            (1115, Perrin, Aybarra, 114, NULL)
+INSERT INTO employee (first_name, last_name, job_id, manager_id)
+    VALUES ( "Bob", "Smith", 1, NULL),
+            ("Mat", "Cauthon", 3, 1),
+            ( "Moiraine", "Damodred", 4, 1),
+            ("Padan", "Fain", 1, NULL ),
+            ("Perrin", "Aybarra", 4, 4);
