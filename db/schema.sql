@@ -11,8 +11,8 @@ CREATE TABLE department (
 
 
 
-CREATE TABLE position (
-  position_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE role (
+  role_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) NOT NULL,
   salary DECIMAL NOT NULL,
   department_id INT,  
@@ -22,11 +22,21 @@ CREATE TABLE position (
 
 
 CREATE TABLE employee (
-    employee_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    employee_id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30),
     last_name VARCHAR(30),
-    position_id INT FOREIGN KEY REFERENCES position(position_id), 
-    manager_id INT FOREIGN KEY REFERENCES employee(employee_id)
+    role_id INT, 
+    manager_id INT
+   /* FOREIGN KEY(position_id) REFERENCES position(position_id)
+    FOREIGN KEY(manager_id) REFERENCES employee(employee_id) */
 );
 
 
+ALTER TABLE employee
+ADD FOREIGN KEY (role_id)
+REFERENCES role(role_id);
+
+
+ALTER TABLE employee
+ADD FOREIGN KEY (manager_id)
+REFERENCES employee(employee_id);
