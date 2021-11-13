@@ -12,6 +12,6 @@ INSERT INTO job (title, salary, department_id)
 INSERT INTO employee (first_name, last_name, job_id, manager_id)
     VALUES ( "Bob", "Smith", 1, NULL),
             ("Mat", "Cauthon", 3, 1),
-            ( "Moiraine", "Damodred", 4, 1),
+            ("Moiraine", "Damodred", 4, 1),
             ("Padan", "Fain", 1, NULL ),
             ("Perrin", "Aybarra", 4, 4);
