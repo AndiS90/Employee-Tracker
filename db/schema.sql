@@ -34,7 +34,7 @@ CREATE TABLE employee (
 
 ALTER TABLE employee
 ADD FOREIGN KEY (job_id)
-REFERENCES job(id);
+REFERENCES role(id);
 
 
 ALTER TABLE employee

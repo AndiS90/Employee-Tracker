@@ -2,9 +2,10 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const department = require('./lib/department');
-const role = require('./lib/role');
-const employee = require('./lib/employee')
+const {viewWholeDept, viewDeptByID, addDept, getDepts}= require('./lib/department');
+const {viewRoleWhole, viewRoleByID, addRole, getTitles} = require('./lib/role');
+const {viewEmployeeWhole, viewEmployeeByID, viewEmployeeByDeptName, addEmployee, getManagers, updateEmployee} = require('./lib/employee');
+
 
 
 allEmployees = [];
@@ -46,8 +47,8 @@ const addDeptQ = [{
 const addRoleQ = [{
 
         type: 'input',
-        name: 'roleName',
-        message: 'What is the role name?',
+        name: 'title',
+        message: 'What is the title of the role?',
     },
     {
         type: 'input',
@@ -58,7 +59,7 @@ const addRoleQ = [{
         type: 'input',
         name: 'roleDept',
         message: 'What is the department for this role?',
-        choices: [department.getDepts()]
+        choices: [getDepts()]
     }
 ];
 
@@ -76,107 +77,131 @@ const addEmployeeQ = [{
     },
     {
         type: 'input',
-        name: 'roleSalary',
+        name: 'employeeSalary',
         message: "What is this employees's salary?",
     },
     {
         type: 'input',
         name: 'employeeRole',
         message: 'What role does this employee have?',
-        choices: [role.getTitles()]
+        choices: [getTitles()]
     },
     {
         type: 'input',
         name: 'employeeManager',
         message: "Who is this employee's manager?",
-        choices: [employee.getManagers()]
+        choices: [getManagers()]
     }
 ];
 
 
+const updateEmployeeQ= [{
+
+    type: 'input',
+    name: 'empRole',
+    message: 'What is the new role?',
+    choices: []
+}];
 
 
 async function promptMenu() {
-        await inquirer.prompt(menu)
+    await inquirer.prompt(menu)
+        .then((data) => {
+            menuAnswer = data.menu;
+            menuIf(menuAnswer);
+        })
+};
+
+
+
+
+
+async function menuIf(answer) {
+
+    if (answer === "VIEW ALL DEPTS") {
+
+        await viewWholeDept();
+
+
+        promptMenu();
+
+    } else if (answer === "VIEW ALL ROLES") {
+
+        await viewRoleWhole();
+
+
+        promptMenu();
+
+
+
+    } else if (answer === "VIEW ALL EMPLOYEES") {
+
+        await viewEmployeeWhole();
+
+        promptMenu();
+
+    } else if (answer === "ADD A ROLE") {
+
+        await inquirer.prompt(addRoleQ)
             .then((data) => {
-                menuAnswer = data.menu;
-                menuIf(menuAnswer);
-            })};
+
+                addRole(data.title, data.roleSalary, data.roleDept);
+            });
+
+
+        promptMenu();
+
+    } else if (answer === "ADD AN EMPLOYEE") {
+
+        await inquirer.prompt(addEmployeeQ)
+            .then((data) => {
+
+                addEmployee(data.employeeFirst, data.employeeLast, data.employeeSalary, data.employeeRole, data.employeeManager);
+
+
+
+            });
+
+
+        promptMenu();
+
+    } else if (answer === "ADD DEPARTMENT") {
+
+        await inquirer.prompt(addDeptQ)
+            .then((data) => {
+
+                addDept(data.deptName); 
+
+
+            });
+
+
+        promptMenu();
+
+    } else if (answer === "UPDATE EMPLOYEE ROLE") {
+
+        await inquirer.prompt()
+            .then((data) => {
+
+                role.addRole(data.roleName, data.roleSalary, data.roleDept);
+
+
+
+            });
+
+
+        promptMenu();
+
+    } else if (answer === "Finish!") {
+
+        //exit application       
+            connection.end();
+            console.log('Thank you, Goodbye!');
+        }
 
 
 
 
+        //return;
 
-        async function menuIf(answer) {
-
-            if (answer === "VIEW ALL DEPTS") {
-
-                await department.viewWhole();
-
-
-                promptMenu();
-
-            } else if (answer === "VIEW ALL ROLES") {
-
-                await role.viewWhole();
-
-
-                promptMenu();
-
-
-
-            } else if (answer === "VIEW ALL EMPLOYEES") {
-
-                await employee.viewWhole();
-
-                promptMenu();
-
-            } else if (answer === "ADD A ROLE") {
-
-               await inquirer.prompt(addRoleQ)
-                    .then((data) => {
-
-                        role.addRole(data.roleName, data.roleSalary, data.roleDept);
-                   });
-
-
-                promptMenu();
-
-            } else if (answer === "ADD AN EMPLOYEE") {
-
-               await inquirer.prompt(addEmployeeQ)
-                    .then((data) => {
-
-
-
-
-                    });
-
-
-                promptMenu();
-
-            } else if (answer === "UPDATE EMPLOYEE ROLE") {
-
-               await inquirer.prompt(addDeptQ)
-                    .then((data) => {
-
-                        role.addRole(data.roleName, data.roleSalary, data.roleDept);
-
-
-
-                    });
-
-
-                promptMenu();
-
-            } else if (answer === "Finish!") {
-
-                await
-
-
-
-
-                //return;
-
-            }
-        };
+    };
