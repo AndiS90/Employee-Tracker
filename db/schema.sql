@@ -40,3 +40,5 @@ REFERENCES role(id);
 ALTER TABLE employee
 ADD FOREIGN KEY (manager_id)
 REFERENCES employee(id);
+
+/*the above alters are added b/c i could not get the initial create table to run with the self foreign key*/

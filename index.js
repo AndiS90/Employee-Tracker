@@ -4,13 +4,21 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const {viewWholeDept, viewDeptByID, addDept, getDepts}= require('./lib/department');
 const {viewRoleWhole, viewRoleByID, addRole, getTitles} = require('./lib/role');
-const {viewEmployeeWhole, viewEmployeeByID, viewEmployeeByDeptName, addEmployee, getManagers, updateEmployee} = require('./lib/employee');
+const {viewEmployeeWhole, viewEmployeeByID, viewEmployeeByDeptName, addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
 
 
 
-allEmployees = [];
-allRoles = [];
-allDepts = [];
+const allEmployees = [];
+const allRoles = [];
+const allDepts = [];
+const allManagers = [];
+
+const allEmpID = [];
+const allRolesID = [];
+const allDeptsID = [];
+const allManagersID = [];
+
+
 
 // Connect to database
 const db = mysql.createConnection({
@@ -32,8 +40,7 @@ const menu = [{
     name: "menu",
     message: "You may choose:",
     choices: ["VIEW ALL DEPTS", "VIEW ALL ROLES", "VIEW ALL EMPLOYEES",
-        "ADD A ROLE", "ADD AN EMPLOYEE", "UPDATE EMPLOYEE ROLE"
-    ]
+        "ADD A ROLE", "ADD AN EMPLOYEE", "UPDATE EMPLOYEE ROLE"]
 }];
 
 const addDeptQ = [{
@@ -59,7 +66,7 @@ const addRoleQ = [{
         type: 'input',
         name: 'roleDept',
         message: 'What is the department for this role?',
-        choices: [getDepts()]
+        choices: allDepts
     }
 ];
 
@@ -84,13 +91,13 @@ const addEmployeeQ = [{
         type: 'input',
         name: 'employeeRole',
         message: 'What role does this employee have?',
-        choices: [getTitles()]
+        choices: allRoles
     },
     {
         type: 'input',
         name: 'employeeManager',
         message: "Who is this employee's manager?",
-        choices: [getManagers()]
+        choices: allManagers
     }
 ];
 
@@ -100,9 +107,65 @@ const updateEmployeeQ= [{
     type: 'input',
     name: 'empRole',
     message: 'What is the new role?',
-    choices: []
+    choices: allRoles
 }];
 
+
+
+ function fillAllRoles() {
+
+    let rolez = getTitles();
+    
+    for(i=0; i < rolez.length; i++){
+       
+        allRolesID.push(rolez[i]);
+        allRoles.push(rolez[i].title);
+
+    }
+};
+
+function fillAllEmps() {
+    let emps = getEmpNames();
+
+    for (i=0; i<emps.length; i++){
+        allEmpID.push(emps[i]);
+        allEmployees.push(emps[i].name);
+
+    }
+};
+
+
+function fillAllDepts() {
+
+    let depts = getDepts();
+
+    for(i=0; i<depts.length; i++){
+
+        allDeptsID.push(depts[i]);
+        allDepts.push(depts[i].department_name)
+    }
+};
+
+function fillAllManagers() {
+
+    let mgrs = getManagers();
+
+    for(i=0; i<mgrs.length; i++){
+
+        allManagersID.push(mgrs[i]);
+        allManagers.push(mgrs[i].manager);
+    }
+};
+
+
+function init(){
+    fillAllRoles();
+    fillAllEmps();
+    fillAllDepts();
+    fillAllManagers();
+    
+    promptMenu();
+};
 
 async function promptMenu() {
     await inquirer.prompt(menu)
@@ -113,15 +176,11 @@ async function promptMenu() {
 };
 
 
-
-
-
 async function menuIf(answer) {
 
     if (answer === "VIEW ALL DEPTS") {
 
         await viewWholeDept();
-
 
         promptMenu();
 
@@ -129,10 +188,7 @@ async function menuIf(answer) {
 
         await viewRoleWhole();
 
-
         promptMenu();
-
-
 
     } else if (answer === "VIEW ALL EMPLOYEES") {
 
@@ -144,6 +200,8 @@ async function menuIf(answer) {
 
         await inquirer.prompt(addRoleQ)
             .then((data) => {
+
+
 
                 addRole(data.title, data.roleSalary, data.roleDept);
             });
@@ -196,7 +254,7 @@ async function menuIf(answer) {
 
         //exit application       
             connection.end();
-            console.log('Thank you, Goodbye!');
+            console.log('Thank you, Good-bye!');
         }
 
 
@@ -205,3 +263,5 @@ async function menuIf(answer) {
         //return;
 
     };
+
+    init();
