@@ -2,7 +2,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const {viewWholeDept, viewDeptByID, addDept, getDepts}= require('./lib/department');
+const {viewIDbyDeptName, viewWholeDept, viewDeptByID, addDept, getDepts}= require('./lib/department');
 const {viewRoleWhole, viewRoleByID, addRole, getTitles} = require('./lib/role');
 const {viewEmployeeWhole, viewEmployeeByID, viewEmployeeByDeptName, addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
 
@@ -201,9 +201,9 @@ async function menuIf(answer) {
         await inquirer.prompt(addRoleQ)
             .then((data) => {
 
+                deptID = viewIDbyDeptName(data.roleDept);
 
-
-                addRole(data.title, data.roleSalary, data.roleDept);
+                addRole(data.title, data.roleSalary, deptID);
             });
 
 
