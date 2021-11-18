@@ -141,7 +141,7 @@ function fillAllEmps() {
 
 function fillAllDepts() {
 
-    let depts = getDepts;
+    let depts = getDepts();
 
     for(i=0; i<depts.length; i++){
 
