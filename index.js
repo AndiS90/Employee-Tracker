@@ -2,21 +2,24 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const {viewIDbyDeptName, viewWholeDept, viewDeptByID, addDept, getDepts}= require('./lib/department');
-const {viewRoleWhole, viewRoleByID, addRole, getTitles} = require('./lib/role');
-const {viewEmployeeWhole, viewEmployeeByID, viewEmployeeByDeptName, addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
+const { viewWholeDept, addDept, getDepts}= require('./lib/department');
+const {viewRoleWhole,  addRole, getTitles} = require('./lib/role');
+const {viewEmployeeWhole,  addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
 
 
-
+//arrays to hold question response options
 const allEmployees = [];
 const allRoles = [];
 const allDepts = [];
 const allManagers = [];
 
+//arrays to hold the full objects
 const allEmpID = [];
 const allRolesID = [];
 const allDeptsID = [];
 const allManagersID = [];
+
+
 
 
 
@@ -33,8 +36,7 @@ const db = mysql.createConnection({
 );
 
 
-
-
+//inquirer questions
 const menu = [{
     type: "list",
     name: "menu",
@@ -84,11 +86,6 @@ const addEmployeeQ = [{
     },
     {
         type: 'input',
-        name: 'employeeSalary',
-        message: "What is this employees's salary?",
-    },
-    {
-        type: 'input',
         name: 'employeeRole',
         message: 'What role does this employee have?',
         choices: allRoles
@@ -105,13 +102,20 @@ const addEmployeeQ = [{
 const updateEmployeeQ= [{
 
     type: 'input',
+    name: 'empName',
+    message: 'What employee would you like to update?',
+    choices: allEmployees
+},
+{
+
+    type: 'input',
     name: 'empRole',
     message: 'What is the new role?',
     choices: allRoles
 }];
 
 
-
+// fillAll functions fill the arrays at the beginning with necessary info
  function fillAllRoles() {
 
     let rolez = getTitles();
@@ -137,7 +141,7 @@ function fillAllEmps() {
 
 function fillAllDepts() {
 
-    let depts = getDepts();
+    let depts = getDepts;
 
     for(i=0; i<depts.length; i++){
 
@@ -158,10 +162,12 @@ function fillAllManagers() {
 };
 
 
+
+
 function init(){
-    fillAllRoles();
-    fillAllEmps();
     fillAllDepts();
+    fillAllRoles();
+    fillAllEmps();    
     fillAllManagers();
     
     promptMenu();
@@ -179,42 +185,53 @@ async function promptMenu() {
 async function menuIf(answer) {
 
     if (answer === "VIEW ALL DEPTS") {
-
         await viewWholeDept();
-
         promptMenu();
 
     } else if (answer === "VIEW ALL ROLES") {
-
         await viewRoleWhole();
-
         promptMenu();
 
     } else if (answer === "VIEW ALL EMPLOYEES") {
-
         await viewEmployeeWhole();
-
         promptMenu();
 
     } else if (answer === "ADD A ROLE") {
-
         await inquirer.prompt(addRoleQ)
             .then((data) => {
 
-                deptID = viewIDbyDeptName(data.roleDept);
+                for(i=0; i<allDeptsID.length; i++){
 
+                    if(data.roleDept == allDeptsID[i].department_name){
+
+                        return deptID = allDeptsID[i].id;
+                    };
+                };
                 addRole(data.title, data.roleSalary, deptID);
             });
-
-
         promptMenu();
 
     } else if (answer === "ADD AN EMPLOYEE") {
-
         await inquirer.prompt(addEmployeeQ)
             .then((data) => {
 
-                addEmployee(data.employeeFirst, data.employeeLast, data.employeeSalary, data.employeeRole, data.employeeManager);
+                for (i=0; i<allRolesID.length; i++){
+
+                    if(data.employeeRole == allRolesID[i].title){
+
+                        return roleID = allRolesID[i].id
+                    }
+                }
+
+                for (i=0; i<allManagersID.length; i++){
+
+                    if(data.employeeManager == allManagersID[i].title){
+
+                        return manID = allManagersID[i].id
+                    }
+                }
+
+                addEmployee(data.employeeFirst, data.employeeLast, roleID, manID);
 
 
 
@@ -224,6 +241,7 @@ async function menuIf(answer) {
         promptMenu();
 
     } else if (answer === "ADD DEPARTMENT") {
+
 
         await inquirer.prompt(addDeptQ)
             .then((data) => {
@@ -238,10 +256,31 @@ async function menuIf(answer) {
 
     } else if (answer === "UPDATE EMPLOYEE ROLE") {
 
-        await inquirer.prompt()
+        await inquirer.prompt(updateEmployeeQ)
             .then((data) => {
 
-                role.addRole(data.roleName, data.roleSalary, data.roleDept);
+                for (i=0; i<allRolesID.length; i++){
+
+                    if(data.empRole == allRolesID[i].title){
+
+                        return job = allRolesID[i].id
+                    };
+                };
+
+                for (i=0; i<allEmpID.length; i++){
+
+                    if(data.empName == allEmpID[i].name )
+                    {
+
+                        return empID= allEmpID[i].id
+                    }
+                }
+
+
+
+                
+
+                updateEmployee(id, empID );
 
 
 
