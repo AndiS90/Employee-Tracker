@@ -2,22 +2,22 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const { viewWholeDept, addDept, getDepts}= require('./lib/department');
-const {viewRoleWhole,  addRole, getTitles} = require('./lib/role');
-const {viewEmployeeWhole,  addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
-
+// const { viewWholeDept, addDept, getDepts}= require('./lib/department');
+// const {viewRoleWhole,  addRole, getTitles} = require('./lib/role');
+// const {viewEmployeeWhole,  addEmployee, getManagers, updateEmployee, getEmpNames} = require('./lib/employee');
+require('dotenv').config();
 
 //arrays to hold question response options
-const allEmployees = [];
-const allRoles = [];
-const allDepts = [];
-const allManagers = [];
+let allEmployees = [];
+let allRoles = [];
+let allDepts = [];
+let allManagers = [];
 
 //arrays to hold the full objects
-const allEmpID = [];
-const allRolesID = [];
-const allDeptsID = [];
-const allManagersID = [];
+let allEmpID = [];
+let allRolesID = [];
+let allDeptsID = [];
+let allManagersID = [];
 
 
 
@@ -41,8 +41,8 @@ const menu = [{
     type: "list",
     name: "menu",
     message: "You may choose:",
-    choices: ["VIEW ALL DEPTS", "VIEW ALL ROLES", "VIEW ALL EMPLOYEES",
-        "ADD A ROLE", "ADD AN EMPLOYEE", "UPDATE EMPLOYEE ROLE"]
+    choices: ["VIEW ALL DEPTS", "VIEW ALL ROLES", "VIEW ALL EMPLOYEES","ADD DEPARTMENT",
+        "ADD A ROLE", "ADD AN EMPLOYEE", "UPDATE EMPLOYEE ROLE", "Finish!"]
 }];
 
 const addDeptQ = [{
@@ -65,7 +65,7 @@ const addRoleQ = [{
         message: 'What is the salary for this role?',
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'roleDept',
         message: 'What is the department for this role?',
         choices: allDepts
@@ -85,13 +85,13 @@ const addEmployeeQ = [{
         message: "What is the employee's last name?",
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'employeeRole',
         message: 'What role does this employee have?',
         choices: allRoles
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'employeeManager',
         message: "Who is this employee's manager?",
         choices: allManagers
@@ -101,14 +101,14 @@ const addEmployeeQ = [{
 
 const updateEmployeeQ= [{
 
-    type: 'input',
+    type: 'list',
     name: 'empName',
     message: 'What employee would you like to update?',
     choices: allEmployees
 },
 {
 
-    type: 'input',
+    type: 'list',
     name: 'empRole',
     message: 'What is the new role?',
     choices: allRoles
@@ -116,52 +116,56 @@ const updateEmployeeQ= [{
 
 
 // fillAll functions fill the arrays at the beginning with necessary info
- function fillAllRoles() {
+ async function fillAllRoles() {
 
-    let rolez = getTitles();
+   let rolez =  await getTitles();
+//    console.log(rolez);
     
     for(i=0; i < rolez.length; i++){
        
-        allRolesID.push(rolez[i]);
+         allRolesID.push(rolez[i]);
         allRoles.push(rolez[i].title);
 
     }
+   
 };
 
-function fillAllEmps() {
-    let emps = getEmpNames();
+async function fillAllEmps() {
+    let emps = await getEmpNames();
 
     for (i=0; i<emps.length; i++){
-        allEmpID.push(emps[i]);
+         allEmpID.push(emps[i]);
         allEmployees.push(emps[i].name);
 
     }
+
 };
 
 
-function fillAllDepts() {
+async function fillAllDepts() {
 
-    let depts = getDepts();
+    let depts = await getDepts();
+    // console.log(depts);
 
     for(i=0; i<depts.length; i++){
 
         allDeptsID.push(depts[i]);
-        allDepts.push(depts[i].department_name)
+        allDepts.push(depts[i].department_name);
     }
+
 };
 
-function fillAllManagers() {
+async function fillAllManagers() {
 
-    let mgrs = getManagers();
+    let mgrs = await getManagers();
 
     for(i=0; i<mgrs.length; i++){
 
-        allManagersID.push(mgrs[i]);
-        allManagers.push(mgrs[i].manager);
+         allManagersID.push(mgrs[i]);
+        allManagers.push(mgrs[i].managers);
     }
+ 
 };
-
-
 
 
 function init(){
@@ -169,7 +173,14 @@ function init(){
     fillAllRoles();
     fillAllEmps();    
     fillAllManagers();
+
+//    console.log(allRolesID);
+
+    // getTitles();
     
+    // console.log(allDepts);
+    // console.log(allEmployees);
+    // console.log(allManagers);
     promptMenu();
 };
 
@@ -194,50 +205,62 @@ async function menuIf(answer) {
 
     } else if (answer === "VIEW ALL EMPLOYEES") {
         await viewEmployeeWhole();
+
         promptMenu();
 
     } else if (answer === "ADD A ROLE") {
         await inquirer.prompt(addRoleQ)
             .then((data) => {
 
+                // deptID = viewIDbyDeptName(data.roleDept);
+
                 for(i=0; i<allDeptsID.length; i++){
 
-                    if(data.roleDept == allDeptsID[i].department_name){
+                    if(data.roleDept === allDeptsID[i].department_name){
 
-                        return deptID = allDeptsID[i].id;
+                        const deptID = allDeptsID[i].id;
+
+                     addRole(data.title, data.roleSalary, deptID);
+                    
                     };
+                   
                 };
-                addRole(data.title, data.roleSalary, deptID);
+               
+                
             });
+            fillAllRoles();
         promptMenu();
 
     } else if (answer === "ADD AN EMPLOYEE") {
         await inquirer.prompt(addEmployeeQ)
             .then((data) => {
 
+                let roleID;
+
                 for (i=0; i<allRolesID.length; i++){
 
-                    if(data.employeeRole == allRolesID[i].title){
+                    if(data.employeeRole === allRolesID[i].title){
 
-                        return roleID = allRolesID[i].id
+                        roleID = allRolesID[i].id;
+                       
                     }
+                    
                 }
 
                 for (i=0; i<allManagersID.length; i++){
 
-                    if(data.employeeManager == allManagersID[i].title){
+                    if(data.employeeManager === allManagersID[i].managers){
 
-                        return manID = allManagersID[i].id
+                       const manID = allManagersID[i].id
+
+                       addEmployee(data.employeeFirst, data.employeeLast, roleID, manID);
                     }
-                }
-
-                addEmployee(data.employeeFirst, data.employeeLast, roleID, manID);
-
-
-
+                }         
+                
             });
 
-
+            fillAllEmps();
+            fillAllManagers();
         promptMenu();
 
     } else if (answer === "ADD DEPARTMENT") {
@@ -245,44 +268,38 @@ async function menuIf(answer) {
 
         await inquirer.prompt(addDeptQ)
             .then((data) => {
-
                 addDept(data.deptName); 
-
 
             });
 
-
+            fillAllDepts();
         promptMenu();
 
     } else if (answer === "UPDATE EMPLOYEE ROLE") {
 
         await inquirer.prompt(updateEmployeeQ)
             .then((data) => {
+                let jobID;
 
                 for (i=0; i<allRolesID.length; i++){
 
-                    if(data.empRole == allRolesID[i].title){
+                    if(data.empRole === allRolesID[i].title){
 
-                        return job = allRolesID[i].id
+                        jobID = allRolesID[i].id
+                     
                     };
                 };
 
                 for (i=0; i<allEmpID.length; i++){
 
-                    if(data.empName == allEmpID[i].name )
+                    if(data.empName === allEmpID[i].name )
                     {
 
-                        return empID= allEmpID[i].id
-                    }
-                }
-
-
-
-                
-
-                updateEmployee(id, empID );
-
-
+                        const empID = allEmpID[i].id
+                       updateEmployee(empID, jobID );
+                    };
+                };
+               
 
             });
 
@@ -292,15 +309,170 @@ async function menuIf(answer) {
     } else if (answer === "Finish!") {
 
         //exit application       
-            connection.end();
+            db.end();
             console.log('Thank you, Good-bye!');
         }
-
-
-
-
-        //return;
-
+       //return;
     };
 
     init();
+
+// department functions 
+async function viewIDbyDeptName(dept_name){
+    return new Promise ((resolve, reject) =>{
+    db.query(`SELECT id FROM department WHERE department_name = ?`, dept_name, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(result);
+    });
+    });
+  };
+  
+    async function viewWholeDept (){
+        return new Promise ((resolve, reject) =>{
+        db.query(`SELECT * FROM department`,  (err, result) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(console.table(result));
+         
+        });
+      }); 
+     };
+
+     async function getDepts(){
+        return new Promise ((resolve, reject) =>{
+        db.query(`SELECT id, department_name FROM department`, (err, result) => {
+      
+          if (err) {
+            reject(err);
+          }
+          resolve(result);
+        });
+      });
+      };
+
+      async function addDept (deptName) {
+        return new Promise ((resolve, reject) =>{
+        db.query(`INSERT INTO department(department_name)
+        VALUES("${deptName}")`, (err, result) => {
+          if (err) {
+            reject(err);
+          }
+         resolve(result);
+        });
+      });
+      };
+
+//role functions
+async function viewRoleWhole () {
+    return new Promise ((resolve, reject) =>{
+    db.query(`select role.id, title, salary, department_name from role 
+    left join department on role.department_id=department.id;`, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(console.table(result));
+    });
+  });
+  };
+
+  
+async function addRole (title, salary, dept_id) {
+    return new Promise ((resolve, reject) =>{
+    db.query(`INSERT INTO role(title, salary, department_id)
+    VALUES("${title}", ${salary}, ${dept_id})`, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+     resolve(result);
+    });
+  });
+  };
+  
+  
+  async function getTitles(){
+    return new Promise ((resolve, reject) =>{
+    db.query(`SELECT id, title FROM role`, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(result);
+    });
+  });
+  ;
+  };
+
+  //employee functions
+  async function viewEmployeeWhole() {
+
+    const query = `select concat(employee1.first_name, " ", employee1.last_name) as manager,
+    concat(employee2.first_name, " ", employee2.last_name) as 'employees',
+    role.title, role.salary, department.department_name from employee as employee1
+    right outer join employee as employee2  on employee2.manager_id = employee1.id
+    inner join role on employee2.job_id = role.id
+    inner join department on role.department_id = department.id;`
+  
+    return new Promise ((resolve, reject) =>{
+    db.query(query, function (err, result) {
+      if (err) {
+        reject(err);
+      }
+      resolve(console.table(result));
+    });
+  });
+  };
+
+  async function addEmployee(first_name, last_name, role_id, manager_id) {
+    return new Promise ((resolve, reject) =>{
+    db.query(`INSERT INTO employee(first_name, last_name, job_id, manager_id)
+  VALUES("${first_name}", "${last_name}", ${role_id}, ${manager_id})`, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(result);
+    });
+  });
+  };
+  
+  async function getManagers() {
+    return new Promise ((resolve, reject) =>{
+    db.query(`SELECT id, CONCAT(first_name, " ",last_name) AS managers FROM employee WHERE manager_id is NULL`, (err, result) => {
+  
+      if (err) {
+        reject(err);
+      }
+      resolve (result);
+    });
+  });
+  };
+  
+  
+  async function getEmpNames(){
+    return new Promise ((resolve, reject) =>{
+    db.query(`SELECT id, CONCAT(first_name, " ",last_name) AS name FROM employee`,
+    (err, result) => {
+    if (err) {
+      reject(err);
+    }
+  
+  resolve(result);
+    // console.table(result);
+  });
+    });
+  };
+  
+  async function updateEmployee(id, job) {
+    return new Promise ((resolve, reject) =>{
+    db.query(`UPDATE employee
+    SET job_id = ${job}
+    WHERE id = ${id}`, (err, result) => {
+  
+      if (err) {
+        reject(err);
+      }
+      resolve(console.table(result));
+    });
+    });
+  };
