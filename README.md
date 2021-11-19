@@ -1,172 +1,148 @@
-# 12 SQL: Employee Tracker
+# Employee-Tracker
 
-## Your Task
+ ![Github license](https://img.shields.io/badge/License-MIT-blue.svg)
 
-Developers frequently have to create interfaces that allow non-developers to easily view and interact with information stored in databases. These interfaces are called **content management systems (CMS)**. Your assignment this week is to build a command-line application from scratch to manage a company's employee database, using Node.js, Inquirer, and MySQL.
+  ## Description:
+A command line application that allows the user to view and manage company departments, managers, and employees by way of SQL tables
 
-Because this application won’t be deployed, you’ll also need to create a walkthrough video that demonstrates its functionality and all of the following acceptance criteria being met. You’ll need to submit a link to the video and add it to the README of your project.
+  Building this code required a core understanding of Node.js, Dotenv, Inquirer, and Mysql2
 
-## User Story
+## Table of Contents
+  
+  - [Installation](#installation) <br>
+  - [Usage](#usage) <br>
+  - [Credits](#credits) <br>
+  - [License](#license) <br>
+  - [Contribute](#contributions) <br>
+  - [Tests](#tests) <br>
+  - [Questions](#questions) <br>
+ 
+  <br>
+  
+  ## <span id="installation"> Installation: </span>
+  <br>
 
-```md
-AS A business owner
-I WANT to be able to view and manage the departments, roles, and employees in my company
-SO THAT I can organize and plan my business
+
+ 
+  
+  - Download the code via your preferred method, by clicking the green code button at the top of this page. 
+
+  - If you don't have Node.js, you can install it [here](https://nodejs.org/en/download/).
+
+  -If you don't have Mysql, you can install it [here](https://www.mysql.com/downloads/)
+
+  - Once you're sure the above steps are completed, the dependencies (Inquirer, Dotenv, Mysql2, and their sub-dependencies) are easily installed by navigating to the project's local directory within your command line and entering the below code:
+
+```bash
+npm i
+```
+ 
+  <br>
+  
+  ## <span id="usage"> Usage: </span>
+  <br>
+
+  [![youtube application screenshot](https://img.youtube.com/vi/XgvGbldBTRY/maxresdefault.jpg)](https://www.youtube.com/watch?v=XgvGbldBTRY) 
+  
+  - Once installed, and you've navigated to the local directory containing the application within your terminal, it may be invoked by using the following command:
+
+```bash
+node index.js
 ```
 
-## Acceptance Criteria
+To seed it with my starter data first, log into mysql via
 
-```md
-GIVEN a command-line application that accepts user input
-WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
-WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
-WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
+```bash
+mysql -u root -p
+```
+and enter your password, then
+
+```bash
+source db/schema.sql; 
 ```
 
-## Mock-Up
-
-The following video shows an example of the application being used from the command line:
-
-[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./Assets/12-sql-homework-video-thumbnail.png)](https://2u-20.wistia.com/medias/2lnle7xnpk)
-
-## Getting Started
-
-You’ll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
-
-**Important**: You will be committing a file that contains your database credentials. Make sure that your MySQL password is not used for any other personal accounts, because it will be visible on GitHub. In upcoming lessons, you will learn how to better secure this password, or you can start researching npm packages now that could help you.
-
-You might also want to make your queries asynchronous. MySQL2 exposes a `.promise()` function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the [npm documentation on MySQL2](https://www.npmjs.com/package/mysql2).
-
-Design the database schema as shown in the following image:
-
-![Database schema includes tables labeled “employee,” role,” and “department.”](./Assets/12-sql-homework-demo-01.png)
-
-As the image illustrates, your schema should contain the following three tables:
-
-* `department`
-
-    * `id`: `INT PRIMARY KEY`
-
-    * `name`: `VARCHAR(30)` to hold department name
-
-* `role`
-
-    * `id`: `INT PRIMARY KEY`
-
-    * `title`: `VARCHAR(30)` to hold role title
-
-    * `salary`: `DECIMAL` to hold role salary
-
-    * `department_id`: `INT` to hold reference to department role belongs to
-
-* `employee`
-
-    * `id`: `INT PRIMARY KEY`
-
-    * `first_name`: `VARCHAR(30)` to hold employee first name
-
-    * `last_name`: `VARCHAR(30)` to hold employee last name
-
-    * `role_id`: `INT` to hold reference to employee role
-
-    * `manager_id`: `INT` to hold reference to another employee that is the manager of the current employee (`null` if the employee has no manager)
-
-You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
-
-## Bonus
-
-Try to add some additional functionality to your application, such as the ability to do the following:
-
-* Update employee managers.
-
-* View employees by manager.
-
-* View employees by department.
-
-* Delete departments, roles, and employees.
-
-* View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.
-
-## Grading Requirements
-
-This homework is graded based on the following criteria:
-
-### Deliverables: 10%
-
-* Your GitHub repository containing your application code.
-
-### Walkthrough Video: 27%
-
-* A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
-
-* The walkthrough video must show all of the technical acceptance criteria being met.
-
-* The walkthrough video must demonstrate how a user would invoke the application from the command line.
-
-* The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
-
-### Technical Acceptance Criteria: 40%
-
-* Satisfies all of the preceding acceptance criteria plus the following:
-
-    * Uses the [Inquirer package](https://www.npmjs.com/package/inquirer).
-
-    * Uses the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to a MySQL database.
-
-    * Uses the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
-
-* Follows the table schema outlined in the homework instructions.
-
-### Repository Quality: 13%
-
-* Repository has a unique name.
-
-* Repository follows best practices for file structure and naming conventions.
-
-* Repository follows best practices for class/id naming conventions, indentation, quality comments, etc.
-
-* Repository contains multiple descriptive commit messages.
-
-* Repository contains a high-quality README with description and a link to a walkthrough video.
-
-### Application Quality 10%
-
-* The application user experience is intuitive and easy to navigate.
-
-### Bonus
-
-Fulfilling any of the following can add up to 20 points to your grade. Note that the highest grade you can achieve is still 100:
-
-* Application allows users to update employee managers (2 points).
-
-* Application allows users to view employees by manager (2 points).
-
-* Application allows users to view employees by department (2 points).
-
-* Application allows users to delete departments, roles, and employees (2 points for each).
-
-* Application allows users to view the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department (8 points).
-
-## Review
-
-You are required to submit BOTH of the following for review:
-
-* A walkthrough video demonstrating the functionality of the application.
-
-* The URL of the GitHub repository, with a unique name and a README describing the project.
-
-- - -
-© 2021 Trilogy Education Services, LLC, a 2U, Inc. brand. Confidential and Proprietary. All Rights Reserved.
+and finally
+
+```bash
+source db/seeds.sql;
+```
+
+
+  
+  <br>  
+  
+  ## <span id="credits"> Credits: <span>
+  
+  <br>
+  
+  - [MYSQL2 Docs](npmjs.com/package/mysql2#documentation)
+
+  - [Node Docs](https://nodejs.org/en/docs/)
+
+  - [Inquirer Docs](https://www.npmjs.com/package//inquirer#documentation)
+
+
+  <br>
+  
+  ## <span id="license"> License </span>
+
+<br>
+MIT License
+
+Copyright (c) 2021 AndiS90
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+  
+  <br>
+  
+  ## <span id="contributions"> To Contribute: </span>
+ 
+
+  - Fork this repo, create a branch and have fun with it!
+
+  or
+
+  - [Report an Issue](https://github.com/AndiS90/Team-Profile-Generator/issues)
+
+  or
+
+  - [Make a Pull Request](https://github.com/AndiS90/Team-Profile-Generator/pulls)
+  
+  <br>
+  
+  ## <span id="tests"> Tests: </span>
+  
+  <br>
+  
+No Current Tests
+
+  <br>
+  
+  ## <span id="questions"> Questions: </span>
+  
+  <br>
+
+  If you have questions I can be reached in the following manners below
+  
+  - [GitHub Profile](https://github.com/AndiS90)
+  
+  
+  - [Email Me](andrea.strickland1990@gmail.com)
+  
+  <br>

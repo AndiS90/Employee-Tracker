@@ -472,7 +472,7 @@ async function addRole (title, salary, dept_id) {
       if (err) {
         reject(err);
       }
-      resolve(console.table(result));
+      resolve(result);
     });
     });
   };
